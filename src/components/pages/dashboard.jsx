@@ -1,10 +1,12 @@
 import React from "react";
+import { AppSidebar } from "@/components/ui/sidebar-dashboard";
+import { SidebarProvider } from "@/components/ui/sidebar"; 
 
 function Dashboard() {
   return (
-    <div className="flex h-screen justify-center items-center bg-gray-100">
-      <h1 className="text-4xl font-bold">Welcome to the Dashboard!</h1>
-    </div>
+    <SidebarProvider>
+        <AppSidebar />
+    </SidebarProvider>
   );
 }
 
