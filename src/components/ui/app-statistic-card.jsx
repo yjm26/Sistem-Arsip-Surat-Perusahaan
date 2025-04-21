@@ -7,7 +7,7 @@ export function StatisticsCards() {
       {statisticsCardsData.map((stat, index) => (
         <Card
           key={index}
-          className="p-4 bg-white  rounded-lg w-[235px] h-[235px] justify-center" // 50% width minus gap
+          className="p-4 bg-white  rounded-lg w-[335px] h-[235px] justify-center" // 50% width minus gap
         >
           <CardContent className="flex flex-col items-center justify-center">
             {/* Icon */}

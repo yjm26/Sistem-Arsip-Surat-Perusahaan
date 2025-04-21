@@ -1,8 +1,8 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { InboxArrowDownIcon, InboxIcon } from '@heroicons/react/24/outline'
 export const statisticsCardsData = [
   {
     color: "gray",
-    icon: Inbox,
+    icon: InboxArrowDownIcon, // Ikon dari Heroicons
     title: "Surat Masuk",
     value: "0",
     footer: {
@@ -13,8 +13,8 @@ export const statisticsCardsData = [
   },
   {
     color: "gray",
-    icon: Inbox,
-    title: "Today's Users",
+    icon: InboxIcon, // Ikon dari Heroicons
+    title: "Surat Keluar",
     value: "2,300",
     footer: {
       color: "text-green-500",
@@ -24,8 +24,8 @@ export const statisticsCardsData = [
   },
   {
     color: "gray",
-    icon: Inbox,
-    title: "New Clients",
+    icon: InboxIcon, // Ikon kustom
+    title: "Surat Disposisi",
     value: "3,462",
     footer: {
       color: "text-red-500",
@@ -33,19 +33,5 @@ export const statisticsCardsData = [
       label: "than yesterday",
     },
   },
-
-  {
-    color: "gray",
-    icon: Inbox,
-    title: "New Clients",
-    value: "3,462",
-    footer: {
-      color: "text-red-500",
-      value: "-2%",
-      label: "than yesterday",
-    },
-  },
-
 ];
-
 export default statisticsCardsData;
