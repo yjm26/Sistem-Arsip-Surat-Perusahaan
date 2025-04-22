@@ -19,13 +19,8 @@ function Dashboard() {
       <main className="flex-1 bg-gray-50 p-8">
 
          {/* Statistics Section */}
-         <section className="mb-8">
+         <section className="flex justify-evenly">
           <StatisticsCards />
-        </section>
-
-        {/* Greeting Section */}
-        <section className="mb-8">
-          <CardGreeting />
         </section>
 
       </main>
