@@ -1,38 +1,85 @@
-import React from "react";
+import { TrendingUp } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
-  ChartLegend,
+  ChartTooltipContent,
 } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+
+const chartData = [
+  { surat: "Masuk", desktop: 186 },
+  { surat: "Keluar", desktop: 305 },
+  { surat: "Disposisi", desktop: 237 },
+];
+
+const chartConfig = {
+  desktop: {
+    label: "Surat",
+    color: "#77A8EC",
+  },
+};
 
 export function AppChart() {
-  // Data untuk chart
-  const data = [
-    { name: "surat masuk", value: 21 },
-    { name: "surat keluar", value: 29 },
-    { name: "surat disposisi", value: 15 },
-  ];
-
   return (
-    <ChartContainer className="p-4 bg-white shadow-md rounded-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Grafik Transaksi Surat</h2>
-        <button className="text-sm bg-gray-100 px-3 py-1 rounded-md">Today</button>
-      </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip content={<ChartTooltip />} />
-          <Bar dataKey="value" fill="#60A5FA" radius={[4, 4, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
-      <div className="mt-4">
-        <p className="text-sm font-medium">Total Surat</p>
-        <p className="text-lg font-bold">65</p>
-      </div>
-    </ChartContainer>
+    <Card className="w-[800px] mx-auto h-full p-4">
+      <CardHeader>
+        <CardTitle>Chart Bulanan</CardTitle>
+        <CardDescription>April</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig}>
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            width={500} 
+            height={300} 
+            margin={{
+              top: 20,
+              right: 20,
+              left: 20,
+              bottom: 20,
+            }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="surat"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tickFormatter={(value) => value}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4}>
+              <LabelList
+                position="top"
+                offset={8}
+                className="fill-foreground"
+                fontSize={10} // Reduced font size for labels
+              />
+            </Bar>
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="flex gap-2 font-medium leading-none">
+          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="leading-none text-muted-foreground">
+          Showing total visitors for the last 6 months
+        </div>
+      </CardFooter>
+    </Card>
   );
 }

@@ -3,13 +3,13 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 export function StatisticsCards() {
   return (
-    <div className="flex gap-20">
+    <div className="flex flex-col gap-10">
       {statisticsCardsData.map((stat) => (
         <Card
           key={stat.title} // Menggunakan title sebagai key
-          className="flex flex-col bg-white rounded-lg w-[400px] h-[180px] justify-between"
+          className="flex flex-col bg-white rounded-lg w-[400px] h-full justify-between shadow-0"
         >
-          <CardContent className="flex items-center justify-evenly flex-1">
+          <CardContent className="flex items-center pt-1">
             {/* Icon */}
             <div>
               <stat.icon className="w-[120px] h-[80px] stroke-[0.5px]" />
