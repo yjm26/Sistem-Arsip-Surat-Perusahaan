@@ -1,15 +1,14 @@
-import { HomeIcon, InboxIcon, BookmarkSquareIcon, BookOpenIcon, ArrowLeftEndOnRectangleIcon } from "@heroicons/react/24/outline";
-
+import {LayoutDashboard, Mails, Notebook, LibraryBig, LogOut} from "lucide-react";
 export const menuItems = [
   {
-    title: "Beranda",
+    title: "Dashboard",
     url: "#",
-    icon: HomeIcon,
+    icon: LayoutDashboard,
   },
   {
     title: "Transaksi Surat",
     url: "#",
-    icon: InboxIcon,
+    icon: Mails,
     children: [
       { title: "Surat Masuk", url: "#surat-masuk" },
       { title: "Surat Keluar", url: "#surat-keluar" },
@@ -18,18 +17,20 @@ export const menuItems = [
   {
     title: "Buku Agenda",
     url: "#",
-    icon: BookmarkSquareIcon,
+    icon: Notebook,
   },
   {
     title: "Refrensi",
     url: "#",
-    icon: BookOpenIcon,
+    icon: LibraryBig,
   },
 ];
 
 
 export const footerItem = {
-  title: "Logout",
+  img : "./public/img/greeting.jpg",
+  user: "Admin Karina",
   url: "#logout",
-  icon: ArrowLeftEndOnRectangleIcon,
+  icon: LogOut,
 };
+

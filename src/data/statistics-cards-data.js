@@ -1,8 +1,10 @@
-import { InboxArrowDownIcon, InboxIcon } from '@heroicons/react/24/outline'
+import {MailWarning, MailPlus, MailMinus} from "lucide-react"
+
+
 export const statisticsCardsData = [
   {
     color: "gray",
-    icon: InboxArrowDownIcon, // Ikon dari Heroicons
+    icon: MailPlus, 
     title: "Surat Masuk",
     value: "0",
     footer: {
@@ -13,7 +15,7 @@ export const statisticsCardsData = [
   },
   {
     color: "gray",
-    icon: InboxIcon, // Ikon dari Heroicons
+    icon: MailMinus, 
     title: "Surat Keluar",
     value: "2,300",
     footer: {
@@ -24,7 +26,7 @@ export const statisticsCardsData = [
   },
   {
     color: "gray",
-    icon: InboxIcon, // Ikon kustom
+    icon: MailWarning, // Ikon kustom
     title: "Surat Disposisi",
     value: "3,462",
     footer: {

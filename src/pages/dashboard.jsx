@@ -1,15 +1,15 @@
 import React from "react";
-import { AppSidebar } from "@/components/ui/app-sidebar";
+import { AppSidebar } from "@/components/Layouts/App-Sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppChart } from "@/components/ui/app-chart";
-import { StatisticsCards } from "@/components/ui/app-statistic-card";
-import { AppTitlePage } from "@/components/ui/app-titlepage";
+import { AppChart } from "@/components/Layouts/app-chart";
+import { StatisticsCards } from "@/components/Layouts/app-statistic-card";
+import { AppTitlePage } from "@/components/Layouts/app-titlepage";
 
 function Dashboard() {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <aside className="w-64 text-white">
+      <aside>
         <SidebarProvider>
           <AppSidebar />
         </SidebarProvider>
