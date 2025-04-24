@@ -2,21 +2,20 @@ import {LayoutDashboard, Mails, Notebook, LibraryBig, LogOut} from "lucide-react
 export const menuItems = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
     title: "Transaksi Surat",
-    url: "#",
     icon: Mails,
     children: [
-      { title: "Surat Masuk", url: "#surat-masuk" },
-      { title: "Surat Keluar", url: "#surat-keluar" },
+      { title: "Surat Masuk", url: "/dashboard/surat-masuk" },
+      { title: "Surat Keluar", url: "/dashboard/surat-keluar" },
     ],
   },
   {
     title: "Buku Agenda",
-    url: "#",
+    url: "/dashboard/agenda",
     icon: Notebook,
   },
   {
@@ -26,9 +25,8 @@ export const menuItems = [
   },
 ];
 
-
 export const footerItem = {
-  img : "./public/img/greeting.jpg",
+  img : "/img/greeting.jpg",
   user: "Admin Karina",
   url: "#logout",
   icon: LogOut,

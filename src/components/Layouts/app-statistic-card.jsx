@@ -12,7 +12,7 @@ export function StatisticsCards() {
           <CardContent className="flex items-center pt-1">
             {/* Icon */}
             <div>
-              <stat.icon className="w-[120px] h-[80px] stroke-[0.5px]" />
+              <stat.icon className="w-[100px] h-[80px] stroke-[0.5px]" />
             </div>
 
             {/* Title and Value */}

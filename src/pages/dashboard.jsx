@@ -1,5 +1,6 @@
 import React from "react";
-import { AppSidebar } from "@/components/Layouts/App-Sidebar.jsx";
+import { LayoutDashboard } from "lucide-react";
+import { AppSidebar } from "@/components/Layouts/app-sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppChart } from "@/components/Layouts/app-chart";
 import { StatisticsCards } from "@/components/Layouts/app-statistic-card";
@@ -15,10 +16,10 @@ function Dashboard() {
         </SidebarProvider>
       </aside>
 
-      {/* Main Content */}
+      {/* Main Content */}  
       <main className="flex-1  bg-gray-100 p-8 flex flex-col items-center justify-center">
         <section>
-          <AppTitlePage /> 
+          <AppTitlePage title="Dashboard" Icon={LayoutDashboard} /> 
         </section>
         {/* Chart and Statistics Section */}
         <section className="flex flex-row bg-white shadow-md rounded-b-lg p-15 w-[1368px] h-[782px] shadow-slate-200">

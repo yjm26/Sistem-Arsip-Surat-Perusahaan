@@ -12,12 +12,12 @@ import { footerItem, menuItems } from "@/data/menu-items";
 
 export function AppSidebar() {
   return (
-    <Sidebar className="h-screen w-[265px] bg-gray-900 text-black">
+    <Sidebar className="h-screen w-[265px] text-black">
       {/* Sidebar Header */}
-      <SidebarHeader className="p-4">
+      <SidebarHeader className="p-4 bg-[#FFFFFF]">
         <div className="flex items-center justify-center">
           <img
-            src="./public/img/full-logo.png"
+            src="/img/full-logo.png"
             alt="Logo"
             className="w-[150px] h-[150px] rounded-md"
           />
@@ -25,7 +25,7 @@ export function AppSidebar() {
       </SidebarHeader>
 
       {/* Sidebar Content */}
-      <SidebarContent className="flex-1">
+      <SidebarContent className="flex-1 bg-[#FFFFFF]">
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.title}>
@@ -65,7 +65,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Sidebar Footer */}
-      <SidebarFooter className="p-4 ">
+      <SidebarFooter className="p-4 bg-[#FFFFFF]">
         <div className="flex items-center gap-2">
           <img
             src={footerItem.img}

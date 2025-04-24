@@ -1,20 +1,8 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "@/pages/login";
-import Dashboard from "@/pages/dashboard";
-
+import AppRoutes from "@/routes";
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* Route untuk halaman login */}
-        <Route path="/" element={<Login />} />
-        {/* Route untuk halaman dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </Router>
-  );
+  return <AppRoutes />;
 }
 
 export default App;
