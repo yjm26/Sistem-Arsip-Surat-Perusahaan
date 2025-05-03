@@ -3,7 +3,7 @@ import {MailMinus} from "lucide-react"
 import { AppSidebar } from "@/layouts/app-sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppTitlePage } from "@/layouts/app-titlepage";
-function SuratKeluar() {
+function TambahSuratKeluar() {
   return (
   <div className="flex h-screen">
   {/* Sidebar */}
@@ -30,4 +30,4 @@ function SuratKeluar() {
   )
 }
 
-export default SuratKeluar; 
+export default TambahSuratKeluar; 

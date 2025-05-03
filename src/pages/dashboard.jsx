@@ -1,10 +1,10 @@
 import React from "react";
 import { LayoutDashboard } from "lucide-react";
-import { AppSidebar } from "@/components/Layouts/app-sidebar.jsx";
+import { AppSidebar } from "@/layouts/app-sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppChart } from "@/components/Layouts/app-chart";
-import { StatisticsCards } from "@/components/Layouts/app-statistic-card";
-import { AppTitlePage } from "@/components/Layouts/app-titlepage";
+import { AppChart } from "@/layouts/app-chart";
+import { StatisticsCards } from "@/layouts/app-statistic-card";
+import { AppTitlePage } from "@/layouts/app-titlepage";
 
 function Dashboard() {
   return (

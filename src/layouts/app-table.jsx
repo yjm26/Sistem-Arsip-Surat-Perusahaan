@@ -1,8 +1,6 @@
 import React from "react";
 
-function AppTable({ columns, data }) {
-
-  
+export function AppTable({ columns, data }) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
@@ -32,7 +30,8 @@ function AppTable({ columns, data }) {
                     key={column.key}
                     className="px-4 py-2 text-sm text-gray-700"
                   >
-                    {row[column.key]}
+                    {/* Render content or call render function */}
+                    {column.render ? column.render(row) : row[column.key]}
                   </td>
                 ))}
               </tr>
@@ -52,5 +51,3 @@ function AppTable({ columns, data }) {
     </div>
   );
 }
-
-export default AppTable;
