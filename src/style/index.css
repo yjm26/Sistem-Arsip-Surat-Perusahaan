@@ -119,6 +119,11 @@
   }
 }
 
+@layer components {
+  .input-text {
+    @apply border-gray-300 border-[0.3px] p-[5px]; 
+  }
+}
 html,
 body,
 p,

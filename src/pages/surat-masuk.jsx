@@ -22,15 +22,44 @@ function SuratMasuk() {
 
   const columns = [
     { key: "nomorSurat", title: "Nomor Surat" },
+    { key: "pengirim", title: "Pengirim" },
     { key: "nomorAgenda", title: "Nomor Agenda" },
-    { key: "dari", title: "Dari" },
-    { key: "kepada", title: "Kepada" },
     { key: "tanggalSurat", title: "Tanggal Surat" },
     { key: "tanggalDiterima", title: "Tanggal Diterima" },
-    { key: "deskripsi", title: "Deskripsi" },
-    { key: "catatan", title: "Catatan" },
-    { key: "jenis", title: "Jenis" },
+    { key: "ringkasan", title: "Ringkasan" },
     { key: "kodeKlasifikasi", title: "Kode Klasifikasi" },
+    { key: "keterangan", title: "Keterangan" },
+    {
+      key: "lampiran",
+      title: "Lampiran",
+      render: (row) => {
+        if (!row.lampiran) return <span className="text-gray-400">-</span>;
+        if (typeof row.lampiran === "string") {
+          // Jika lampiran berupa URL string
+          return (
+            <a
+              href={row.lampiran}
+              download
+              className="text-blue-600 underline"
+            >
+              {row.lampiran.split("/").pop() || "Lampiran"}
+            </a>
+          );
+        }
+        // Jika lampiran berupa File object
+        const url = URL.createObjectURL(row.lampiran);
+        return (
+          <a
+            href={url}
+            download={row.lampiran.name || "lampiran"}
+            className="text-blue-600 underline"
+            onClick={() => setTimeout(() => URL.revokeObjectURL(url), 1000)}
+          >
+            {row.lampiran.name || "Lampiran"}
+          </a>
+        );
+      },
+    },
     {
       key: "actions",
       title: "Actions",
