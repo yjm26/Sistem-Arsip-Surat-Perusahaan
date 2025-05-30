@@ -9,8 +9,17 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { footerItem, menuItems } from "@/data/menu-items";
+import { useNavigate } from "react-router-dom";
 
 export function AppSidebar() {
+  const navigate = useNavigate();
+   // Handler logout
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
     <Sidebar className="h-screen w-[265px] text-black">
       {/* Sidebar Header */}
@@ -75,7 +84,8 @@ export function AppSidebar() {
           <div>
             <p className="text-sm font-medium">{footerItem.user}</p>
             <a
-              href={footerItem.url}
+              href="#"
+              onClick={handleLogout}
               className="text-xs text-gray-400 hover:text-red-600"
             >
               <footerItem.icon className="inline w-4 h-4 mr-1" />

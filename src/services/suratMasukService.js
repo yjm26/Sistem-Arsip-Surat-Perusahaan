@@ -1,33 +1,56 @@
-import { suratMasukData } from "@/data/surat-masuk";
+const API_URL = "http://localhost:5000/api/surat-masuk";
 
-// Fungsi untuk mendapatkan semua data
-export const getSuratMasuk = () => {
-  return suratMasukData;
-};
+// GET semua surat masuk
+export async function getSuratMasuk() {
+  const res = await fetch(API_URL);
+  if (!res.ok) throw new Error("Gagal mengambil data surat masuk");
+  return await res.json();
+}
 
-// Fungsi untuk menambah data baru
-export const addSuratMasuk = (newData) => {
-  const newId = suratMasukData.length ? suratMasukData[suratMasukData.length - 1].id + 1 : 1;
-  const newEntry = { id: newId, ...newData };
-  suratMasukData.push(newEntry);
-  return newEntry;
-};
+// GET surat masuk by nomor_surat
+export async function getSuratMasukById(nomor_surat) {
+  const res = await fetch(`${API_URL}/${nomor_surat}`);
+  if (!res.ok) throw new Error("Surat tidak ditemukan");
+  return await res.json();
+}
 
-// Fungsi untuk memperbarui data berdasarkan ID
-export const updateSuratMasuk = (id, updatedData) => {
-  const index = suratMasukData.findIndex((item) => item.id === id);
-  if (index !== -1) {
-    suratMasukData[index] = { ...suratMasukData[index], ...updatedData };
-    return suratMasukData[index];
+// CREATE surat masuk baru
+export async function addSuratMasuk(data) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    body: data instanceof FormData ? data : JSON.stringify(data),
+    headers: data instanceof FormData ? undefined : { "Content-Type": "application/json" },
+  });
+
+  let responseBody;
+  try {
+    responseBody = await res.json();
+  } catch {
+    responseBody = {};
   }
-  return null;
-};
 
-export const deleteSuratMasuk = (id) => {
-  const index = suratMasukData.findIndex((item) => item.id === id);
-  if (index !== -1) {
-    suratMasukData.splice(index, 1); // Hapus data dari array
-    return true;
+  if (!res.ok) {
+    // Jika backend mengirim error detail, lempar error dengan pesan itu
+    throw new Error(responseBody.error || "Gagal menambah surat masuk");
   }
-  return false; // Jika ID tidak ditemukan
-};
+  return responseBody;
+}
+
+// UPDATE surat masuk
+export async function updateSuratMasuk(nomorSurat, formData) {
+  const res = await fetch(`${API_URL}/${nomorSurat}`, {
+    method: "PUT",
+    body: formData,
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return await res.json();
+}
+
+// DELETE surat masuk
+export async function deleteSuratMasuk(nomor_surat) {
+  const response = await fetch(`http://localhost:5000/api/surat-masuk/${nomor_surat}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Gagal menghapus surat masuk');
+  return response.json();
+}

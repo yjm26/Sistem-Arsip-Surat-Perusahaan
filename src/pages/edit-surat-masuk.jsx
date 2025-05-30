@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { addSuratMasuk } from "@/services/suratMasukService";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getSuratMasukById, updateSuratMasuk } from "@/services/suratMasukService";
 import { AppSidebar } from "@/layouts/app-sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { MailPlus } from "lucide-react";
@@ -8,7 +8,7 @@ import { AppTitlePage } from "@/layouts/app-titlepage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function TambahSuratMasuk() {
+function EditSuratMasuk() {
   const [formData, setFormData] = useState({
     nomorSurat: "",
     pengirim: "",
@@ -21,8 +21,32 @@ function TambahSuratMasuk() {
     lampiran: null,
   });
 
-
   const navigate = useNavigate();
+  const { nomorSurat } = useParams();
+
+  // Ambil data surat yang akan diedit
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const surat = await getSuratMasukById(nomorSurat);
+        setFormData({
+          nomorSurat: surat.nomor_surat,
+          pengirim: surat.pengirim,
+          nomorAgenda: surat.nomor_agenda,
+          tanggalSurat: surat.tanggal_surat ? surat.tanggal_surat.slice(0, 10) : "",
+          tanggalDiterima: surat.tanggal_diterima ? surat.tanggal_diterima.slice(0, 10) : "",
+          ringkasan: surat.ringkasan,
+          kodeKlasifikasi: surat.kode_klasifikasi,
+          keterangan: surat.keterangan,
+          lampiran: null,
+        });
+      } catch {
+        toast.error("Data surat tidak ditemukan");
+        navigate("/dashboard/surat-masuk");
+      }
+    }
+    fetchData();
+  }, [nomorSurat, navigate]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -34,9 +58,8 @@ function TambahSuratMasuk() {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return null;
+    if (!dateStr) return "";
     const d = new Date(dateStr);
-    // Hasil: '2025-05-30'
     return d.toISOString().split("T")[0];
   };
 
@@ -56,11 +79,10 @@ function TambahSuratMasuk() {
     }
 
     try {
-      await addSuratMasuk(formDataToSend); // Pastikan service menerima FormData
-      toast.success("Surat masuk berhasil ditambahkan!");
+      await updateSuratMasuk(nomorSurat, formDataToSend);
+      toast.success("Surat masuk berhasil diupdate!");
       setTimeout(() => navigate("/dashboard/surat-masuk"), 1500);
     } catch (err) {
-      // Cek error duplikat dari backend
       if (
         (err.response && err.response.data && err.response.data.error && err.response.data.error.includes("Nomor surat sudah ada")) ||
         (err.message && err.message.includes("Nomor surat sudah ada"))
@@ -87,10 +109,10 @@ function TambahSuratMasuk() {
 
       <main className="flex-1 bg-gray-100 p-8 flex flex-col items-center justify-center">
         <section>
-          <AppTitlePage title="Tambah Surat Masuk" Icon={MailPlus} />
+          <AppTitlePage title="Edit Surat Masuk" Icon={MailPlus} />
         </section>
 
-        {/* Section Tambah Surat Masuk */}
+        {/* Section Edit Surat Masuk */}
         <section className="flex flex-row bg-white shadow-md rounded-b-lg p-15 w-[1368px] h-[782px] shadow-slate-200">
           <form onSubmit={handleSubmit} className="w-full">
             <div className="grid grid-cols-3 gap-6 mb-10">
@@ -237,4 +259,4 @@ function TambahSuratMasuk() {
   );
 }
 
-export default TambahSuratMasuk;
+export default EditSuratMasuk;
