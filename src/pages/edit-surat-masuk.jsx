@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSuratMasukById, updateSuratMasuk } from "@/services/suratMasukService";
+import { getKlasifikasi } from "@/services/refrensiService"; // Tambahkan import ini
 import { AppSidebar } from "@/layouts/app-sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { MailPlus } from "lucide-react";
@@ -20,6 +21,8 @@ function EditSuratMasuk() {
     keterangan: "",
     lampiran: null,
   });
+
+  const [klasifikasiList, setKlasifikasiList] = useState([]); // Tambahkan state ini
 
   const navigate = useNavigate();
   const { nomorSurat } = useParams();
@@ -47,6 +50,19 @@ function EditSuratMasuk() {
     }
     fetchData();
   }, [nomorSurat, navigate]);
+
+  // Ambil data klasifikasi dari refrensi
+  useEffect(() => {
+    const fetchKlasifikasi = async () => {
+      try {
+        const data = await getKlasifikasi();
+        setKlasifikasiList(data);
+      } catch {
+        toast.error("Gagal mengambil data klasifikasi");
+      }
+    };
+    fetchKlasifikasi();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -201,14 +217,19 @@ function EditSuratMasuk() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Kode Klasifikasi
                 </label>
-                <input
-                  type="text"
+                <select
                   name="kodeKlasifikasi"
-                  placeholder="Kode Klasifikasi"
                   value={formData.kodeKlasifikasi}
                   onChange={handleChange}
                   className="w-full input-text rounded-md shadow-sm"
-                />
+                >
+                  <option value="">Pilih Kode Klasifikasi</option>
+                  {klasifikasiList.map((item) => (
+                    <option key={item.id} value={item.klasifikasi}>
+                      {item.klasifikasi}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

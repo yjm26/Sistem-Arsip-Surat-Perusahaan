@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { MailPlus, FileDown } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/layouts/app-sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppTitlePage } from "@/layouts/app-titlepage";
 import { AppTable } from "@/layouts/app-table";
-import { getSuratKeluar, deleteSuratKeluar } from "@/services/suratKeluarService";
+import { getSuratKeluar } from "@/services/suratKeluarService"; // Pastikan ada service ini
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
-function SuratKeluar() {
+function AgendaSuratKeluar() {
   const [data, setData] = useState([]);
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const suratPerPage = 10;
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -20,27 +22,15 @@ function SuratKeluar() {
 
   const fetchData = async () => {
     try {
-      const surat = await getSuratKeluar();
-      setData(surat);
+      const suratKeluar = await getSuratKeluar();
+      setData(suratKeluar);
     } catch (err) {
       alert("Gagal mengambil data surat keluar: " + err.message);
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteSuratKeluar(id);
-      fetchData();
-    } catch (err) {
-      alert("Gagal menghapus surat keluar: " + err.message);
-    }
-  };
-
-  // Urutkan berdasarkan input duluan (array order)
-  const sortedData = [...data].sort(() => 0);
-
   // Filter data berdasarkan search
-  const filteredData = sortedData.filter((row) =>
+  const filteredData = data.filter((row) =>
     [
       row.nomor_surat,
       row.tujuan,
@@ -55,11 +45,19 @@ function SuratKeluar() {
       .some((v) => v.includes(search.toLowerCase()))
   );
 
+  // Filter data berdasarkan periode tanggal (gunakan tanggal_keluar)
+  const filteredByDate = filteredData.filter((row) => {
+    const tgl = row.tanggal_keluar ? new Date(row.tanggal_keluar) : null;
+    const afterStart = startDate ? tgl >= new Date(startDate) : true;
+    const beforeEnd = endDate ? tgl <= new Date(endDate) : true;
+    return afterStart && beforeEnd;
+  });
+
   // Pagination logic
-  const totalPages = Math.ceil(filteredData.length / suratPerPage);
+  const totalPages = Math.ceil(filteredByDate.length / suratPerPage);
   const indexOfLast = currentPage * suratPerPage;
   const indexOfFirst = indexOfLast - suratPerPage;
-  const currentData = filteredData.slice(indexOfFirst, indexOfLast);
+  const currentData = filteredByDate.slice(indexOfFirst, indexOfLast);
 
   const columns = [
     { key: "nomor_surat", title: "Nomor Surat" },
@@ -97,34 +95,51 @@ function SuratKeluar() {
               rel="noopener noreferrer"
               className="text-blue-600 underline"
             >
-              <FileDown /> 
+              <FileDown />
             </a>
           );
         }
         return <span className="text-gray-400">-</span>;
       },
     },
-    {
-      key: "actions",
-      title: "Actions",
-      render: (row) => (
-        <div className="flex space-x-2">
-          <button
-            onClick={() => navigate(`/dashboard/surat-keluar/edit/${row.nomor_surat}`)}
-            className="px-2 py-1 bg-blue-400 text-white rounded hover:bg-blue-600"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDelete(row.nomor_surat)}
-            className="px-2 py-1 bg-red-white text-white bg-red-500 rounded hover:bg-red-600"
-          >
-            Delete
-          </button>
-        </div>
-      ),
-    },
   ];
+
+  // Fungsi cetak PDF
+  const handlePrintPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Agenda Surat Keluar", 14, 10);
+    autoTable(doc, {
+      head: [
+        [
+          "Nomor Surat",
+          "Tujuan",
+          "Nomor Agenda",
+          "Tanggal Surat",
+          "Tanggal Keluar",
+          "Ringkasan",
+          "Kode Klasifikasi",
+          "Keterangan",
+        ],
+      ],
+      body: filteredByDate.map((row) => [
+        row.nomor_surat,
+        row.tujuan,
+        row.nomor_agenda,
+        row.tanggal_surat
+          ? new Date(row.tanggal_surat).toLocaleDateString("id-ID")
+          : "-",
+        row.tanggal_keluar
+          ? new Date(row.tanggal_keluar).toLocaleDateString("id-ID")
+          : "-",
+        row.ringkasan,
+        row.kode_klasifikasi,
+        row.keterangan,
+      ]),
+      styles: { fontSize: 8 },
+      startY: 20,
+    });
+    doc.save("agenda-surat-keluar.pdf");
+  };
 
   return (
     <div className="flex h-screen">
@@ -138,21 +153,45 @@ function SuratKeluar() {
       {/* Main Content */}
       <main className="flex-1 bg-gray-100 p-8 flex flex-col items-center justify-center">
         <section>
-          <AppTitlePage title="Surat Keluar" Icon={MailPlus} />
+          <AppTitlePage title="Agenda Surat Keluar" Icon={MailPlus} />
         </section>
 
         {/* Table Section */}
         <section className="bg-white shadow-md rounded-b-lg p-15 w-[1368px] h-[782px] shadow-slate-200 relative">
           <div className="flex justify-between items-center mb-3">
-            <button
-              onClick={() => navigate("/dashboard/surat-keluar/tambah-surat-keluar")}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Tambah Surat
-            </button>
+            
+            <div className="flex gap-2 items-center">
+               <button
+                onClick={handlePrintPDF}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Cetak PDF
+              </button>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-2 py-1 border border-gray-300 rounded"
+              />
+              <span>-</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-2 py-1 border border-gray-300 rounded"
+              />
+             
+            </div>
+            {/* Kanan: Cari surat keluar */}
             <input
               type="text"
-              placeholder="Cari surat..."
+              placeholder="Cari surat keluar..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -209,4 +248,4 @@ function SuratKeluar() {
   );
 }
 
-export default SuratKeluar;
+export default AgendaSuratKeluar;

@@ -1,4 +1,5 @@
-import {LayoutDashboard, Mails, Notebook, LibraryBig, LogOut} from "lucide-react";
+import { LayoutDashboard, Mails, Notebook, LibraryBig, LogOut } from "lucide-react";
+
 export const menuItems = [
   {
     title: "Dashboard",
@@ -15,20 +16,32 @@ export const menuItems = [
   },
   {
     title: "Buku Agenda",
-    url: "/dashboard/agenda",
+    url: "#",
     icon: Notebook,
+    children: [
+      { title: "Surat Masuk", url: "/dashboard/agenda-surat-masuk" },
+      { title: "Surat Keluar", url: "/dashboard/agenda-surat-keluar" },
+    ],
   },
   {
     title: "Refrensi",
-    url: "#",
+    url: "/dashboard/refrensi",
     icon: LibraryBig,
+  },
+  {
+    title: "Kelola Pengguna",
+    url: "/dashboard/kelola-pengguna",
+    icon: LibraryBig,
+    adminOnly: true, 
   },
 ];
 
-export const footerItem = {
-  img : "/img/greeting.jpg",
-  user: "Admin Karina",
-  url: "#logout",
-  icon: LogOut,
-};
+export function getFooterItem() {
+  return {
+    img: "/img/profile.png",
+    user: localStorage.getItem("email") || "User",
+    url: "#logout",
+    icon: LogOut,
+  };
+}
 

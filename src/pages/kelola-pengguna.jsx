@@ -1,123 +1,91 @@
 import React, { useState, useEffect } from "react";
-import { MailPlus, FileDown } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/layouts/app-sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppTitlePage } from "@/layouts/app-titlepage";
 import { AppTable } from "@/layouts/app-table";
-import { getSuratKeluar, deleteSuratKeluar } from "@/services/suratKeluarService";
+import { getAccounts, deleteAccount } from "@/services/accountService";
+import AppTambahPengguna from "@/layouts/app-tambah-pengguna";
+import AppEditPengguna from "@/layouts/app-edit-pengguna";
 
-function SuratKeluar() {
+function KelolaPengguna() {
   const [data, setData] = useState([]);
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const suratPerPage = 10;
+  const [showModal, setShowModal] = useState(false);
+  const userPerPage = 10;
+  const navigate = useNavigate();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState(null);
+
+  // Ambil role dari localStorage (atau context sesuai implementasi login kamu)
+  const role = localStorage.getItem("role");
 
   useEffect(() => {
+    // Jika bukan admin, redirect ke halaman lain (misal dashboard)
+    if (role !== "admin") {
+      navigate("/dashboard");
+      return;
+    }
     fetchData();
+    // eslint-disable-next-line
   }, []);
 
   const fetchData = async () => {
     try {
-      const surat = await getSuratKeluar();
-      setData(surat);
+      const accounts = await getAccounts();
+      setData(accounts);
     } catch (err) {
-      alert("Gagal mengambil data surat keluar: " + err.message);
+      alert("Gagal mengambil data user: " + err.message);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await deleteSuratKeluar(id);
+      await deleteAccount(id);
       fetchData();
     } catch (err) {
-      alert("Gagal menghapus surat keluar: " + err.message);
+      alert("Gagal menghapus user: " + err.message);
     }
   };
 
-  // Urutkan berdasarkan input duluan (array order)
+  // Urutkan berdasarkan input paling awal
   const sortedData = [...data].sort(() => 0);
-
-  // Filter data berdasarkan search
+  // Filter data berdasarkan kolom yang ada
   const filteredData = sortedData.filter((row) =>
-    [
-      row.nomor_surat,
-      row.tujuan,
-      row.nomor_agenda,
-      row.tanggal_surat,
-      row.tanggal_keluar,
-      row.ringkasan,
-      row.kode_klasifikasi,
-      row.keterangan,
-    ]
+    [row.id, row.email, row.role]
       .map((v) => (v ? v.toString().toLowerCase() : ""))
       .some((v) => v.includes(search.toLowerCase()))
   );
 
   // Pagination logic
-  const totalPages = Math.ceil(filteredData.length / suratPerPage);
-  const indexOfLast = currentPage * suratPerPage;
-  const indexOfFirst = indexOfLast - suratPerPage;
+  const totalPages = Math.ceil(filteredData.length / userPerPage);
+  const indexOfLast = currentPage * userPerPage;
+  const indexOfFirst = indexOfLast - userPerPage;
   const currentData = filteredData.slice(indexOfFirst, indexOfLast);
 
   const columns = [
-    { key: "nomor_surat", title: "Nomor Surat" },
-    { key: "tujuan", title: "Tujuan" },
-    { key: "nomor_agenda", title: "Nomor Agenda" },
-    {
-      key: "tanggal_surat",
-      title: "Tanggal Surat",
-      render: (row) =>
-        row.tanggal_surat
-          ? new Date(row.tanggal_surat).toLocaleDateString("id-ID")
-          : "-",
-    },
-    {
-      key: "tanggal_keluar",
-      title: "Tanggal Keluar",
-      render: (row) =>
-        row.tanggal_keluar
-          ? new Date(row.tanggal_keluar).toLocaleDateString("id-ID")
-          : "-",
-    },
-    { key: "ringkasan", title: "Ringkasan" },
-    { key: "kode_klasifikasi", title: "Kode Klasifikasi" },
-    { key: "keterangan", title: "Keterangan" },
-    {
-      key: "lampiran",
-      title: "Lampiran",
-      render: (row) => {
-        if (typeof row.lampiran === "string" && row.lampiran !== "") {
-          return (
-            <a
-              href={`http://localhost:5000/uploads/${row.lampiran}`}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
-            >
-              <FileDown /> 
-            </a>
-          );
-        }
-        return <span className="text-gray-400">-</span>;
-      },
-    },
+    { key: "id", title: "ID" },
+    { key: "email", title: "Email" },
+    { key: "role", title: "Role" },
     {
       key: "actions",
       title: "Actions",
       render: (row) => (
         <div className="flex space-x-2">
           <button
-            onClick={() => navigate(`/dashboard/surat-keluar/edit/${row.nomor_surat}`)}
+            onClick={() => {
+              setEditData(row);
+              setShowEditModal(true);
+            }}
             className="px-2 py-1 bg-blue-400 text-white rounded hover:bg-blue-600"
           >
             Edit
           </button>
           <button
-            onClick={() => handleDelete(row.nomor_surat)}
-            className="px-2 py-1 bg-red-white text-white bg-red-500 rounded hover:bg-red-600"
+            onClick={() => handleDelete(row.id)}
+            className="px-2 py-1 bg-red-white text-white bg-red-500 rounded hover:bg-red-600 "
           >
             Delete
           </button>
@@ -138,21 +106,21 @@ function SuratKeluar() {
       {/* Main Content */}
       <main className="flex-1 bg-gray-100 p-8 flex flex-col items-center justify-center">
         <section>
-          <AppTitlePage title="Surat Keluar" Icon={MailPlus} />
+          <AppTitlePage title="Kelola User" Icon={UserPlus} />
         </section>
 
         {/* Table Section */}
         <section className="bg-white shadow-md rounded-b-lg p-15 w-[1368px] h-[782px] shadow-slate-200 relative">
           <div className="flex justify-between items-center mb-3">
             <button
-              onClick={() => navigate("/dashboard/surat-keluar/tambah-surat-keluar")}
+              onClick={() => setShowModal(true)}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              Tambah Surat
+              Tambah Pengguna
             </button>
             <input
               type="text"
-              placeholder="Cari surat..."
+              placeholder="Cari pengguna..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -204,9 +172,24 @@ function SuratKeluar() {
             </nav>
           </div>
         </section>
+        {/* Modal Tambah Pengguna */}
+        <AppTambahPengguna
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          onSuccess={fetchData}
+        />
+        <AppEditPengguna
+          open={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            fetchData();
+            setShowEditModal(false);
+          }}
+          initialData={editData}
+        />
       </main>
     </div>
   );
 }
 
-export default SuratKeluar;
+export default KelolaPengguna;

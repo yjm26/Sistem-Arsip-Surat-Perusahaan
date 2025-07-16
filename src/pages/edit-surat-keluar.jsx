@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { addSuratMasuk } from "@/services/suratMasukService";
-import { getKlasifikasi } from "@/services/refrensiService"; // Tambahkan ini
+import { useNavigate, useParams } from "react-router-dom";
+import { getSuratKeluarById, updateSuratKeluar } from "@/services/suratKeluarService";
+import { getKlasifikasi } from "@/services/refrensiService"; 
 import { AppSidebar } from "@/layouts/app-sidebar.jsx";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { MailPlus } from "lucide-react";
@@ -9,30 +9,54 @@ import { AppTitlePage } from "@/layouts/app-titlepage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function TambahSuratMasuk() {
+function EditSuratKeluar() {
   const [formData, setFormData] = useState({
     nomorSurat: "",
-    pengirim: "",
+    tujuan: "",
     nomorAgenda: "",
     tanggalSurat: "",
-    tanggalDiterima: "",
+    tanggalKeluar: "",
     ringkasan: "",
     kodeKlasifikasi: "",
     keterangan: "",
     lampiran: null,
   });
 
-  const [klasifikasiList, setKlasifikasiList] = useState([]); // State untuk data klasifikasi
+  const [klasifikasiList, setKlasifikasiList] = useState([]); 
 
   const navigate = useNavigate();
+  const { nomorSurat } = useParams();
 
-  // Ambil data klasifikasi dari backend
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const surat = await getSuratKeluarById(nomorSurat);
+        setFormData({
+          nomorSurat: surat.nomor_surat,
+          tujuan: surat.tujuan,
+          nomorAgenda: surat.nomor_agenda,
+          tanggalSurat: surat.tanggal_surat ? surat.tanggal_surat.slice(0, 10) : "",
+          tanggalKeluar: surat.tanggal_keluar ? surat.tanggal_keluar.slice(0, 10) : "",
+          ringkasan: surat.ringkasan,
+          kodeKlasifikasi: surat.kode_klasifikasi,
+          keterangan: surat.keterangan,
+          lampiran: null,
+        });
+      } catch {
+        toast.error("Data surat tidak ditemukan");
+        navigate("/dashboard/surat-keluar");
+      }
+    }
+    fetchData();
+  }, [nomorSurat, navigate]);
+
+  // Ambil data klasifikasi dari refrensi
   useEffect(() => {
     const fetchKlasifikasi = async () => {
       try {
         const data = await getKlasifikasi();
         setKlasifikasiList(data);
-      } catch{
+      } catch {
         toast.error("Gagal mengambil data klasifikasi");
       }
     };
@@ -49,9 +73,8 @@ function TambahSuratMasuk() {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return null;
+    if (!dateStr) return "";
     const d = new Date(dateStr);
-    // Hasil: '2025-05-30'
     return d.toISOString().split("T")[0];
   };
 
@@ -59,10 +82,10 @@ function TambahSuratMasuk() {
     e.preventDefault();
     const formDataToSend = new FormData();
     formDataToSend.append("nomorSurat", formData.nomorSurat);
-    formDataToSend.append("pengirim", formData.pengirim);
+    formDataToSend.append("tujuan", formData.tujuan);
     formDataToSend.append("nomorAgenda", formData.nomorAgenda);
     formDataToSend.append("tanggalSurat", formatDate(formData.tanggalSurat));
-    formDataToSend.append("tanggalDiterima", formatDate(formData.tanggalDiterima));
+    formDataToSend.append("tanggalKeluar", formatDate(formData.tanggalKeluar));
     formDataToSend.append("ringkasan", formData.ringkasan);
     formDataToSend.append("kodeKlasifikasi", formData.kodeKlasifikasi);
     formDataToSend.append("keterangan", formData.keterangan);
@@ -71,11 +94,10 @@ function TambahSuratMasuk() {
     }
 
     try {
-      await addSuratMasuk(formDataToSend); // Pastikan service menerima FormData
-      toast.success("Surat masuk berhasil ditambahkan!");
-      setTimeout(() => navigate("/dashboard/surat-masuk"), 1500);
+      await updateSuratKeluar(nomorSurat, formDataToSend);
+      toast.success("Surat keluar berhasil diupdate!");
+      setTimeout(() => navigate("/dashboard/surat-keluar"), 1500);
     } catch (err) {
-      // Cek error duplikat dari backend
       if (
         (err.response && err.response.data && err.response.data.error && err.response.data.error.includes("Nomor surat sudah ada")) ||
         (err.message && err.message.includes("Nomor surat sudah ada"))
@@ -102,10 +124,10 @@ function TambahSuratMasuk() {
 
       <main className="flex-1 bg-gray-100 p-8 flex flex-col items-center justify-center">
         <section>
-          <AppTitlePage title="Tambah Surat Masuk" Icon={MailPlus} />
+          <AppTitlePage title="Edit Surat Keluar" Icon={MailPlus} />
         </section>
 
-        {/* Section Tambah Surat Masuk */}
+        {/* Section Edit Surat Keluar */}
         <section className="flex flex-row bg-white shadow-md rounded-b-lg p-15 w-[1368px] h-[782px] shadow-slate-200">
           <form onSubmit={handleSubmit} className="w-full">
             <div className="grid grid-cols-3 gap-6 mb-10">
@@ -125,13 +147,13 @@ function TambahSuratMasuk() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pengirim
+                  Tujuan
                 </label>
                 <input
                   type="text"
-                  name="pengirim"
-                  placeholder="Nama Pengirim"
-                  value={formData.pengirim}
+                  name="tujuan"
+                  placeholder="Tujuan Surat"
+                  value={formData.tujuan}
                   onChange={handleChange}
                   className="w-full h-full input-text rounded-md shadow-sm"
                   required
@@ -165,12 +187,12 @@ function TambahSuratMasuk() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tanggal Diterima
+                  Tanggal Keluar
                 </label>
                 <input
                   type="date"
-                  name="tanggalDiterima"
-                  value={formData.tanggalDiterima}
+                  name="tanggalKeluar"
+                  value={formData.tanggalKeluar}
                   onChange={handleChange}
                   className="w-full h-full input-text rounded-md shadow-sm"
                 />
@@ -199,7 +221,6 @@ function TambahSuratMasuk() {
                   value={formData.kodeKlasifikasi}
                   onChange={handleChange}
                   className="w-full input-text rounded-md shadow-sm"
-                  required
                 >
                   <option value="">Pilih Kode Klasifikasi</option>
                   {klasifikasiList.map((item) => (
@@ -238,7 +259,7 @@ function TambahSuratMasuk() {
             <div className="flex justify-end gap-2">
               <button
                 type="button"
-                onClick={() => navigate("/dashboard/surat-masuk")}
+                onClick={() => navigate("/dashboard/surat-keluar")}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
               >
                 Batal
@@ -258,4 +279,4 @@ function TambahSuratMasuk() {
   );
 }
 
-export default TambahSuratMasuk;
+export default EditSuratKeluar;

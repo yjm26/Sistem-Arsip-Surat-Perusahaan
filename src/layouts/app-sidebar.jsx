@@ -8,15 +8,26 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { footerItem, menuItems } from "@/data/menu-items";
+import { menuItems } from "@/data/menu-items";
+import { LogOut } from "lucide-react"; // Import icon jika belum
 import { useNavigate } from "react-router-dom";
 
 export function AppSidebar() {
   const navigate = useNavigate();
-   // Handler logout
+  const role = localStorage.getItem("role"); 
+  const filteredMenu = menuItems.filter(
+    (item) => !item.adminOnly || role === "admin"
+  );
+
+  // Ambil email user dari localStorage
+  const userEmail = localStorage.getItem("email") || "User";
+
+  // Handler logout
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("user");
+    localStorage.removeItem("email");
+    localStorage.removeItem("role");
     navigate("/login");
   };
 
@@ -30,13 +41,13 @@ export function AppSidebar() {
             alt="Logo"
             className="w-[150px] h-[150px] rounded-md"
           />
-          </div>
+        </div>
       </SidebarHeader>
 
       {/* Sidebar Content */}
       <SidebarContent className="flex-1 bg-[#FFFFFF]">
         <SidebarMenu>
-          {menuItems.map((item) => (
+          {filteredMenu.map((item) => (
             <SidebarMenuItem key={item.title}>
               {item.children ? (
                 <>
@@ -77,18 +88,18 @@ export function AppSidebar() {
       <SidebarFooter className="p-4 bg-[#FFFFFF]">
         <div className="flex items-center gap-2">
           <img
-            src={footerItem.img}
+            src="/img/profile.png"
             alt="User"
             className="w-[40px] h-[40px] rounded-sm"
           />
           <div>
-            <p className="text-sm font-medium">{footerItem.user}</p>
+            <p className="text-sm font-medium">{userEmail}</p>
             <a
               href="#"
               onClick={handleLogout}
               className="text-xs text-gray-400 hover:text-red-600"
             >
-              <footerItem.icon className="inline w-4 h-4 mr-1" />
+              <LogOut className="inline w-4 h-4 mr-1" />
               Logout
             </a>
           </div>
